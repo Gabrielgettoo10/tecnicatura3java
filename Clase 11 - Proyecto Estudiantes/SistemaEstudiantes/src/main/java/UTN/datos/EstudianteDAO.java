@@ -7,34 +7,36 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EstudianteDAO {
-    //Metodo listar
-    public List<Estudiante> listarEstudiantes() throws SQLException{
+
+    // Método listar
+    public List<Estudiante> listarEstudiantes() throws SQLException {
         List<Estudiante> estudiantes = new ArrayList<>();
-        //Creamos algunos objetos que son necesarios para comunicarnos con la base de datos
-        PreparedStatement ps; //Envia la sentencia a la base de datos
-        ResultSet rs; //Obtenemos el resultado de la base de datos
-        //Creamos un objeto de tipo conexion
-        Connection con = getConnection();
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
         String sql = "SELECT * FROM estudiantes2022 ORDER BY idestudiantes2022";
+        
         try {
+            con = getConnection();
             ps = con.prepareStatement(sql);
             rs = ps.executeQuery();
-            while(rs.next()){
-                var estudiante = new Estudiante();
+            
+            while (rs.next()) {
+                Estudiante estudiante = new Estudiante();
                 estudiante.setIdEstudiante(rs.getInt("idestudiantes2022"));
                 estudiante.setNombre(rs.getString("nombre"));
                 estudiante.setApellido(rs.getString("apellido"));
                 estudiante.setTelefono(rs.getString("telefono"));
                 estudiante.setEmail(rs.getString("email"));
-                // Fatla agregarlo a la lista
-                estudiantes.add(estudiante);
 
-            } catch (Exception e){
+                estudiantes.add(estudiante);
+            }
+        } catch (Exception e){
                 System.out.println( "Ocurrio un error al seleccionar datos:"+e.getMessage());
             }
             finally {
@@ -53,10 +55,10 @@ public class EstudianteDAO {
             PreparedStatement ps;
             ResultSet rs;
             Connection con = getConnection();
-            String sql = "SELECT * FROM estudiantes2024 WHERE idestudiantes 2022=?";
+            String sql = "SELECT * FROM estudiantes2022 WHERE idestudiantes 2022=?";
             try{
                 ps = con.prepareStatement(sql);
-                ps = setInt(1, estudiante.getIdEstudiante());
+                ps.setInt(1, estudiante.getIdEstudiante());
                 rs = ps.executeQuery();
                 if(rs.next()){
                     estudiante.setNombre(rs.getString("nombre"));
@@ -83,14 +85,16 @@ public class EstudianteDAO {
         public boolean agregarEstudiante(Estudiante estudiante){
             PreparedStatement ps;
             Connection con = getConnection();
-            String sql = 'INSERT INTO estudiantes2022 (nombre, apellido, telefono, email) VALUES (?, ?, ?, ?)';
-            try{
+            String sql = "INSERT INTO estudiantes2022(nombre, apellido, telefono, email) VALUES (?, ?, ?, ?)";
+            try {
+                con = getConnection();
                 ps = con.prepareStatement(sql);
                 ps.setString(1, estudiante.getNombre());
                 ps.setString(2, estudiante.getApellido());
                 ps.setString(3, estudiante.getTelefono());
                 ps.setString(4, estudiante.getEmail());
-                ps.execute();
+
+                ps.executeUpdate();
                 return true;
             }catch(Exception e){
                 System.out.println("Ocurrio un error al agregar al estudiante: "+e.getMessage());
@@ -110,7 +114,7 @@ public class EstudianteDAO {
         public boolean modificarEstudiante(Estudiante estudiante){
             PreparedStatement ps;
             Connection con = getConnection();
-            String sql = "UPDATE estudiantes2024 SET nombre=?. apellido=?, telefono=?, email=? WHERE idestudiantes2022=?";
+            String sql = "UPDATE estudiantes2022 SET nombre=?. apellido=?, telefono=?, email=? WHERE idestudiantes2022=?";
             try{
                 ps =con.prepareStatement(sql);
                 ps.setString(1, estudiante.getNombre());
